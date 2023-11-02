@@ -1,17 +1,21 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+import LayerToggle from '../widgets/LayerToggle.vue'
+
 const mapDiv = ref(null)
 
 import { initialize, addLayers } from '../data/map'
 
-onMounted(() => {
-  initialize(mapDiv.value).then(addLayers)
-  // addLayers()
+onMounted(async () => {
+  const view = await initialize(mapDiv.value)
+  addLayers()
+  view.ui.add('layerToggle', 'top-right')
 })
 </script>
 <template>
   <div id="mapDiv" ref="mapDiv"></div>
+  <LayerToggle></LayerToggle>
 </template>
 
 <style scoped>
