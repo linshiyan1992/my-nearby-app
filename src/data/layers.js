@@ -21,6 +21,11 @@ export const barLayer = new FeatureLayer({
       name: 'tel',
       alias: '电话',
       type: 'string'
+    },
+    {
+      name: 'id',
+      alias: 'id',
+      type: 'oid'
     }
   ],
   popupTemplate: {
@@ -59,6 +64,11 @@ export const foodStallLayer = new FeatureLayer({
       name: 'ad',
       alias: '县市区',
       type: 'string'
+    },
+    {
+      name: 'id',
+      alias: 'id',
+      type: 'oid'
     }
   ],
   popupEnabled: true,
@@ -101,6 +111,11 @@ export const coffeeShopLayer = new FeatureLayer({
       name: 'ad',
       alias: '县市区',
       type: 'string'
+    },
+    {
+      name: 'id',
+      alias: 'id',
+      type: 'oid'
     }
   ],
   popupEnabled: true,

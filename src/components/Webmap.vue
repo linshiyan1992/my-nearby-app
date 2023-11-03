@@ -2,20 +2,23 @@
 import { ref, onMounted } from 'vue'
 
 import LayerToggle from '../widgets/LayerToggle.vue'
+import ShowingPosition from '../widgets/ShowingPosition.vue'
+import ShowGeocoding from '../widgets/ShowGeocoding.vue'
 
 const mapDiv = ref(null)
 
 import { initialize, addLayers } from '../data/map'
 
 onMounted(async () => {
-  const view = await initialize(mapDiv.value)
+  await initialize(mapDiv.value)
   addLayers()
-  view.ui.add('layerToggle', 'top-right')
 })
 </script>
 <template>
   <div id="mapDiv" ref="mapDiv"></div>
-  <LayerToggle></LayerToggle>
+  <LayerToggle position="top-right" />
+  <ShowingPosition position="top-right" />
+  <ShowGeocoding />
 </template>
 
 <style scoped>

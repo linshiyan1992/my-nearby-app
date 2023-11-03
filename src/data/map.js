@@ -34,9 +34,5 @@ export async function initialize(container) {
 export function addLayers() {
   view.map.add(barLayer)
   view.map.add(coffeeShopLayer)
-  // view.when(() => {
-  //   barLayer.when(() => {
-  //     view.goTo(barLayer.fullExtent)
-  //   })
-  // })
+  view.map.add(foodStallLayer)
 }
