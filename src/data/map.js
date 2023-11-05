@@ -31,6 +31,7 @@ export const view = new MapView({
 
 export async function initialize(container) {
   view.container = container
+  view.popupEnabled = false
   return view.when()
 }
 

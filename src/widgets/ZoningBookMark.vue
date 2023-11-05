@@ -3,6 +3,15 @@ import Expand from '@arcgis/core/widgets/Expand'
 import { ref, computed, onMounted } from 'vue'
 import { view } from '../data/map'
 import { Close } from '@element-plus/icons-vue'
+import {
+  ElTable,
+  ElTableColumn,
+  ElPagination,
+  ElSelect,
+  ElOption,
+  ElText,
+  ElButton
+} from 'element-plus'
 
 const bookmarkDiv = ref(null)
 const bookmark = ref(null)
@@ -361,7 +370,7 @@ onMounted(() => {
   background-color: #ad0026;
   color: white;
   border-radius: 20px 20px 0 0;
-  padding: 10px;
+  padding: 10px 20px;
 }
 
 #bookmark-title {
@@ -372,7 +381,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 13px 25px;
+  padding: 15px 20px;
   background-color: white;
   border-radius: 0 0 20px 20px;
 }

@@ -1,6 +1,7 @@
 <script setup>
 import Header from './Header.vue'
 import Webmap from './Webmap.vue'
+import { ElContainer, ElHeader, ElMain, ElFooter } from 'element-plus'
 </script>
 
 <template>

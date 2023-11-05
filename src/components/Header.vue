@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { ElLink, ElIcon, ElDropdown, ElDropdownItem } from 'element-plus'
 
 const isScreenMode = ref(false)
 

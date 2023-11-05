@@ -5,6 +5,7 @@ import LayerToggle from '../widgets/LayerToggle.vue'
 import ShowingPosition from '../widgets/ShowingPosition.vue'
 import ShowGeocoding from '../widgets/ShowGeocoding.vue'
 import ZoningBookMark from '../widgets/ZoningBookMark.vue'
+import Popover from '../widgets/Popover.vue'
 
 const mapDiv = ref(null)
 
@@ -21,6 +22,7 @@ onMounted(async () => {
   <ShowingPosition position="top-right" />
   <ShowGeocoding />
   <ZoningBookMark />
+  <Popover />
 </template>
 
 <style scoped>

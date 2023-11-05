@@ -1,3 +1,4 @@
+// import './assets/index.scss'
 import './assets/main.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 

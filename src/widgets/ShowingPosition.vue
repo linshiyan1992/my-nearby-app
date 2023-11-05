@@ -5,6 +5,8 @@ import Expand from '@arcgis/core/widgets/Expand'
 import { view } from '../data/map'
 import { DocumentCopy } from '@element-plus/icons-vue'
 
+import { ElButton } from 'element-plus'
+
 const props = defineProps({ position: String })
 
 const center = ref({ x: null, y: null, zoom: null })
