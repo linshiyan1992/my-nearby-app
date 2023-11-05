@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import LayerToggle from '../widgets/LayerToggle.vue'
 import ShowingPosition from '../widgets/ShowingPosition.vue'
 import ShowGeocoding from '../widgets/ShowGeocoding.vue'
+import ZoningBookMark from '../widgets/ZoningBookMark.vue'
 
 const mapDiv = ref(null)
 
@@ -19,6 +20,7 @@ onMounted(async () => {
   <LayerToggle position="top-right" />
   <ShowingPosition position="top-right" />
   <ShowGeocoding />
+  <ZoningBookMark />
 </template>
 
 <style scoped>

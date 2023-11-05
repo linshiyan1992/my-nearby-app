@@ -23,7 +23,10 @@ export const map = new Map({
 export const view = new MapView({
   map,
   center: [118.622, 24.89],
-  zoom: 13
+  zoom: 13,
+  constraints: {
+    maxZoom: 18
+  }
 })
 
 export async function initialize(container) {
