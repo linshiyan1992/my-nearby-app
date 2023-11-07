@@ -277,7 +277,8 @@ function createExpand() {
     expandIcon: 'pin-tear',
     view: view,
     content: bookmarkDiv.value,
-    label: 'chooseLocation'
+    label: 'chooseLocation',
+    expanded: true
   })
   expandWidget = expand
   view.ui.add(expand, 'top-left')
