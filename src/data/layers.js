@@ -118,6 +118,7 @@ export const coffeeShopLayer = new FeatureLayer({
       type: 'oid'
     }
   ],
+  outFields: ['*'],
   popupEnabled: true,
   popupTemplate: {
     title: '咖啡馆：{name}',

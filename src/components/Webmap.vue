@@ -22,7 +22,7 @@ onMounted(async () => {
   <ShowingPosition position="top-right" />
   <ShowGeocoding />
   <ZoningBookMark />
-  <Popover />
+  <Popover :boundary="mapDiv" />
 </template>
 
 <style scoped>
