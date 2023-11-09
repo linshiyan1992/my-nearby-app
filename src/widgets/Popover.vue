@@ -3,9 +3,10 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useFloating, autoUpdate, hide, flip, offset } from '@floating-ui/vue'
 import { view } from '../data/map'
 import Point from '@arcgis/core/geometry/Point'
-import { barLayer, coffeeShopLayer } from '../data/layers'
+import { coffeeShopLayer } from '../data/layers'
 import { ElButton, ElIcon } from 'element-plus'
 import { Close, Place } from '@element-plus/icons-vue'
+import * as ReactiveUtils from '@arcgis/core/core/reactiveUtils'
 
 const props = defineProps({
   boundary: HTMLElement
@@ -20,6 +21,7 @@ const isVisible = ref(false)
 const frameLeft = ref(null)
 const frameTop = ref(null)
 const events = ref([])
+const layerList = []
 
 //UI
 const { floatingStyles, middlewareData } = useFloating(reference, floating, {
@@ -167,6 +169,16 @@ function getFrameRect(boundary) {
 }
 
 onMounted(() => {
+  /**
+   * 返回值为控规图层，目前可供查询的图层只有控规图层，未来可能还包括现状建筑等
+   */
+  ReactiveUtils.once(() => !view.updating).then(() => {
+    const layers = view.map.layers
+      .flatten((layer) => layer.sublayers)
+      .filter((layer) => layer.sublayers === null)
+    layerList.push(...layers.get('items'))
+  })
+
   view.when().then(() => {
     const boundary = view.container
     middleware.value.push(

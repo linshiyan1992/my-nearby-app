@@ -1,12 +1,15 @@
 // import './assets/index.scss'
 import './assets/main.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import esriConfig from '@arcgis/core/config'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+
+esriConfig.portalUrl = 'https://172.168.120.244/geoscene'
 
 const app = createApp(App)
 
