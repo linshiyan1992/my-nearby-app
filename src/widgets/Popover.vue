@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useFloating, autoUpdate, hide, flip, offset } from '@floating-ui/vue'
 import { view } from '../data/map'
 import Point from '@arcgis/core/geometry/Point'
-import { coffeeShopLayer } from '../data/layers'
-import { ElButton, ElIcon } from 'element-plus'
-import { Close, Place } from '@element-plus/icons-vue'
+import { landUseCode } from '../data/landUseCode'
+import { ElButton, ElDescriptions, ElDescriptionsItem, ElIcon } from 'element-plus'
+import { Close, ZoomIn } from '@element-plus/icons-vue'
 import * as ReactiveUtils from '@arcgis/core/core/reactiveUtils'
 
 const props = defineProps({
@@ -21,7 +21,7 @@ const isVisible = ref(false)
 const frameLeft = ref(null)
 const frameTop = ref(null)
 const events = ref([])
-const layerList = []
+let zoningLayer
 
 //UI
 const { floatingStyles, middlewareData } = useFloating(reference, floating, {
@@ -75,9 +75,11 @@ async function registerClickEvent() {
   const eventHandle = view.on('click', async (event) => {
     // 需要注意，screenPoint指的是从地图左上角开始计算的坐标值，而mapPoint指的是世界坐标值
     const { screenPoint, mapPoint } = event
-    const testResult = await view.hitTest(screenPoint, { include: [coffeeShopLayer] })
+    const testResult = await view.hitTest(screenPoint, { include: zoningLayer })
     // 如果没有选中任何要素，用户大概率期待取消工具
-    if (testResult.results.length === 0) return false
+    if (testResult.results.length === 0) {
+      return false
+    }
 
     // 更新弹窗依赖的虚拟元素,此处UI和业务逻辑耦合了
     const { x, y } = screenPoint
@@ -92,9 +94,10 @@ async function registerClickEvent() {
 
     // Graphic 用来查询并且高亮要素
     const graphic = testResult.results[0].graphic
-    await queryFeature(graphic)
+    const { name, layer } = graphic.attributes
+    featureInfo.value = { name, layer }
+    highlightFeature(graphic)
 
-    // 弹窗此时可以显示了
     isVisible.value = true
 
     // 选择结束，改变鼠标指针状态
@@ -105,6 +108,7 @@ async function registerClickEvent() {
 }
 
 function registerUpdateEvent() {
+  removeEvents(events.value)
   // 即用户拖拽和缩放事件
   const eventsName = ['drag', 'mouse-wheel']
   // handles 的用途同上
@@ -138,27 +142,32 @@ function changeCursorStyle(isCustomPointer) {
     view.surface.style.cursor = 'default'
   } else {
     const cursorUrl = '../src/assets/locate.svg'
-    view.surface.style.cursor = `url(${cursorUrl}) 16 20,auto`
+    view.surface.style.cursor = `url(${cursorUrl}) 16 30,auto`
   }
 }
 
-async function queryFeature(graphic) {
-  const layerView = await view.whenLayerView(coffeeShopLayer)
-  const featureSet = await layerView.queryFeatures({
-    geometry: graphic.geometry,
-    returnGeometry: true
+async function highlightFeature(graphic) {
+  view.whenLayerView(zoningLayer).then((layerView) => {
+    // Handle 的用途是用来移除高亮,从这个微件而言，当用户关掉弹窗之后，高亮就应该移除
+    const highlightHandle = layerView.highlight(graphic)
+    events.value.push(highlightHandle)
   })
-  const attributes = featureSet.features[0].attributes
-  const { name, address } = attributes
-  featureInfo.value = { name, address }
-
-  // Handle 的用途是用来移除高亮,从这个微件而言，当用户关掉弹窗之后，高亮就应该移除
-  const highlightHandle = layerView.highlight(graphic)
-  events.value.push(highlightHandle)
 }
 
 function handleClose() {
   isVisible.value = false
+}
+
+function handleZoom() {
+  const { longitude, latitude } = featureLocation.value
+  const mapPoint = new Point({
+    longitude,
+    latitude
+  })
+  view.goTo({
+    center: mapPoint,
+    zoom: 18
+  })
 }
 
 function getFrameRect(boundary) {
@@ -173,10 +182,8 @@ onMounted(() => {
    * 返回值为控规图层，目前可供查询的图层只有控规图层，未来可能还包括现状建筑等
    */
   ReactiveUtils.once(() => !view.updating).then(() => {
-    const layers = view.map.layers
-      .flatten((layer) => layer.sublayers)
-      .filter((layer) => layer.sublayers === null)
-    layerList.push(...layers.get('items'))
+    zoningLayer = view.map.layers.filter((layer) => layer.title === '古城控规2').items[0]
+    zoningLayer.outFields = ['*']
   })
 
   view.when().then(() => {
@@ -196,17 +203,23 @@ onMounted(() => {
 <template>
   <div class="popover" ref="floating" :style="floatingStyles" v-if="isVisible">
     <div id="popover-functional">
-      <div id="popover-title">规划查询</div>
+      <div id="popover-functional-head">
+        <el-button :icon="ZoomIn" size="small" circle @click="handleZoom"></el-button>
+        <div id="popover-title">规划查询</div>
+      </div>
       <el-button :icon="Close" circle @click="handleClose" size="small"></el-button>
     </div>
     <div id="popover-content">
-      <div id="info-title">店名:{{ featureInfo.name }}</div>
-      <div id="info-address">地址:{{ featureInfo.address }}</div>
+      <el-descriptions :column="1" size="large" direction="horizontal" border>
+        <el-descriptions-item label="类别代码">{{ featureInfo?.layer }}</el-descriptions-item>
+        <el-descriptions-item label="用地性质">{{
+          landUseCode[featureInfo?.layer?.split('-')[1]]
+        }}</el-descriptions-item>
+        <el-descriptions-item label="所属街道">{{ featureInfo?.name }}</el-descriptions-item>
+      </el-descriptions>
     </div>
   </div>
-  <div color="#ad0026" id="queryBtn" @click="handleQuery" class="esri-widget">
-    <el-icon><Place :size="100" /></el-icon>
-  </div>
+  <div id="queryBtn" @click="handleQuery"></div>
 </template>
 
 <style>
@@ -227,6 +240,12 @@ onMounted(() => {
   background-color: #ad0026;
 }
 
+#popover-functional-head {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 #popover-title {
   color: white;
 }
@@ -238,12 +257,22 @@ onMounted(() => {
 }
 
 #queryBtn {
-  width: 32px;
-  height: 32px;
+  width: 25px;
+  height: 25px;
+  padding: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  background-color: white;
+  background: center/55% no-repeat #fff url('../assets/urban-planning.png');
+  border-radius: 50%;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+#queryBtn:hover {
+  transform: scale(1.1);
 }
 </style>

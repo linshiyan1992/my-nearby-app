@@ -12,18 +12,21 @@ const props = defineProps({
 
 const layersToggleUI = ref(null)
 const allLayersLoaded = ref(false)
-const layerList = [barLayer, coffeeShopLayer]
+const layerList = []
 const layerData = []
+
+function dragable() {
+  // todo
+}
 
 onMounted(() => {
   // 当图层全部加载完毕时，让图层列表可见
   ReactiveUtils.once(() => !view.updating).then(() => {
     // 因为图层全部从WebMap中加载, 图层是组合在一起的，需要将图层提取出来
-    const layers = view.map.layers
-      .flatten((item) => {
-        return item.sublayers
-      })
-      .filter((layer) => layer.sublayers === null)
+    const layers = view.map.layers.flatten((item) => {
+      return item.sublayers
+    })
+    // .filter((layer) => layer.sublayers === null)
     // 将图层添加到作用域为组件的layerList中，方便模板调用
     layerList.push(...layers)
     layerData.push(
@@ -88,9 +91,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#layerList {
-}
-
 #wrapper {
   padding-left: 10px;
   padding-right: 10px;

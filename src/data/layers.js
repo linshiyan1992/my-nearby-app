@@ -71,6 +71,7 @@ export const foodStallLayer = new FeatureLayer({
       type: 'oid'
     }
   ],
+  outFields: ['*'],
   popupEnabled: true,
   popupTemplate: {
     title: '大排档：{name}',
